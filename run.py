@@ -57,7 +57,7 @@ def download_data(params: dict):
 def main(params):
     setup_seed(params['seed'])
     if params['mode'] == 'data':
-        save_path = Path(params['result_path'], params['dataset'])
+        save_path = Path(params['data_path'])
     else:
         save_path = Path(
             params['result_path'], params['dataset'], params['model'])
@@ -65,7 +65,8 @@ def main(params):
     setup_logging(save_path)
     logging.info(save_path)
     if params['mode'] == 'data':
-        download_data(params)
+        pass
+        # download_data(params)
     elif params['mode'] == 'train':
         from utils.train_test import Trainer
         trainer = Trainer(params, device=device)
@@ -97,17 +98,14 @@ def load_config(config_path):
 
 
 def get_params(args, config):
-    # Merge default params with dataset-specific params
-    params = {**config['default'], **config['datasets'][args.dataset]}
-    # add mode config
+    params = {**config['default']}
     params['mode'] = str(args.mode)
-
     # If model argument is provided, merge model-specific params
     if params['mode'] != 'data':
-        try:
-            params = {**params, **config['models'][args.model]}
-        except KeyError as e:
-            print(f"args model must be either 'dgnn', 'dgdcn'. Now it's: {e}")
+        params = {**config['default'], 
+                  **config['datasets'][args.dataset]}
+        params['mode'] = str(args.mode)
+        params = {**params, **config['models'][args.model]}
 
     # Ensure paths are cross-platform compatible
     params['data_path'] = Path(params['data_path'])
@@ -120,13 +118,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description="Training and Testing TGSL.")
     parser.add_argument('--dataset', type=str,
-                        choices=['wiki', 'reddit', 'mooc', 'lastfm'],
-                        default='wiki', help='Which dataset to use.')
+                        choices=['wikipedia', 'reddit', 'mooc', 'lastfm'],
+                        help='Which dataset to use.')
     parser.add_argument('--mode', type=str, choices=[
         'train', 'test', 'data'], default='train')
     # parser.add_argument('--model', type=str, choices=[
     #     'dgnn'], help='Which model to use.')
-    print('hello')
     args = parser.parse_args()
     config = load_config('./config.yaml')
     params = get_params(args, config)
