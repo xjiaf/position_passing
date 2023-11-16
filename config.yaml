@@ -1,0 +1,26 @@
+default:
+  data_path: "./data"
+  processed_data_path: "./data/processed"
+  result_path: './result'
+  x_path: "x.pt"
+  edge_path: "edge.pt"
+  seed: 2023
+
+datasets:
+  wiki:
+    dataset: 'wiki'
+    data_path: "wikipedia.csv"
+
+
+  yelp:
+    dataset: 'yelp'
+
+models:
+  dgnn:
+    model: 'dgnn'
+    lr: 1e-3
+    dgnn_hidden_dim: 128
+    dgnn_output_dim: 128
+
+  pdgnn:
+    model: 'pdgnn'
