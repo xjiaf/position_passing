@@ -4,7 +4,7 @@ import yaml
 import logging
 from pathlib import Path
 import numpy as np
-import pandas as pd
+# import pandas as pd
 import torch
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -102,9 +102,7 @@ def get_params(args, config):
     params['mode'] = str(args.mode)
     # If model argument is provided, merge model-specific params
     if params['mode'] != 'data':
-        params = {**config['default'], 
-                  **config['datasets'][args.dataset]}
-        params['mode'] = str(args.mode)
+        params = {**params, **config['datasets'][args.dataset]}
         params = {**params, **config['models'][args.model]}
 
     # Ensure paths are cross-platform compatible
