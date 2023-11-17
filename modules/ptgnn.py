@@ -1,6 +1,6 @@
 import torch
 from torch import nn
-from torch_geometric.nn import TGNMemory, TransformerConv
+from torch_geometric.nn import TGNMemory
 from torch_geometric.nn.models.tgn import (
     IdentityMessage,
     LastAggregator,
@@ -9,7 +9,7 @@ from torch_geometric.nn.models.tgn import (
 
 class PTGNN(nn.Module):
     def __init__(self, num_nodes: int, embedding_dim: int, msg_dim: int,
-                    memory_dim: int, time_dim: int, step: float):
+                 memory_dim: int, time_dim: int, step: float):
         super(PTGNN, self).__init__()
         self.memory = TGNMemory(
             num_nodes,
@@ -51,23 +51,14 @@ class PTGNN(nn.Module):
         last_pos_msg, pos_last_update = self.pos_memory(src)
         pos_emb = self.embedding(src)
         time_diff = t - pos_last_update
-        space_time_decay = torch.exp(-self.delta * time_diff) * self.step
+        space_time_decay = (
+            torch.exp(-torch.sigmoid(self.delta) * time_diff) * self.step
+        )
         pos_msg = pos_emb + last_pos_msg * space_time_decay
 
         # pos_memory update
         self.pos_memory.update_state(src, src, t, pos_msg)
 
-
-class GraphAttentionEmbedding(torch.nn.Module):
-    def __init__(self, in_channels, out_channels, msg_dim, time_enc):
-        super().__init__()
-        self.time_enc = time_enc
-        edge_dim = msg_dim + time_enc.out_channels
-        self.conv = TransformerConv(in_channels, out_channels // 2, heads=2,
-                                    dropout=0.1, edge_dim=edge_dim)
-
-    def forward(self, x, last_update, edge_index, t, msg):
-        rel_t = last_update[edge_index[0]] - t
-        rel_t_enc = self.time_enc(rel_t.to(x.dtype))
-        edge_attr = torch.cat([rel_t_enc, msg], dim=-1)
-        return self.conv(x, edge_index, edge_attr)
+    def reset_memory(self):
+        self.memory.reset_state()
+        self.pos_memory.reset_state()
