@@ -65,8 +65,7 @@ def main(params):
     setup_logging(save_path)
     logging.info(save_path)
     if params['mode'] == 'data':
-        pass
-        # download_data(params)
+        download_data(params)
     elif params['mode'] == 'train':
         from utils.train_test import Trainer
         trainer = Trainer(params, device=device)
@@ -117,7 +116,7 @@ if __name__ == '__main__':
         description="Training and Testing TGSL.")
     parser.add_argument('--dataset', type=str,
                         choices=['wikipedia', 'reddit', 'mooc', 'lastfm'],
-                        help='Which dataset to use.')
+                        default="wikipedia", help='Which dataset to use.')
     parser.add_argument('--mode', type=str, choices=[
         'train', 'test', 'data'], default='train')
     # parser.add_argument('--model', type=str, choices=[
@@ -126,7 +125,6 @@ if __name__ == '__main__':
     config = load_config('./config.yaml')
     params = get_params(args, config)
     try:
-        print(params)
         main(params)
     except Exception:
         logging.exception("An error occurred!")
