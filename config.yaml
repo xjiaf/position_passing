@@ -8,8 +8,14 @@ datasets:
   wikipedia:
     dataset: 'wikipedia'
 
-  yelp:
-    dataset: 'yelp'
+  reddit:
+    dataset: 'reddit'
+
+  mooc:
+    dataset: 'mooc'
+    
+  lastfm:
+    dataset: 'lastfm'
 
 models:
 

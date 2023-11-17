@@ -8,7 +8,8 @@ from torch_geometric.nn.models.tgn import (
 
 
 class PTGNN(nn.Module):
-    def __init__(self, num_nodes, msg_dim, memory_dim, time_dim, embedding_dim, step):
+    def __init__(self, num_nodes: int, embedding_dim: int, msg_dim: int,
+                    memory_dim: int, time_dim: int, step: float):
         super(PTGNN, self).__init__()
         self.memory = TGNMemory(
             num_nodes,
@@ -34,13 +35,17 @@ class PTGNN(nn.Module):
         self.delta = nn.Parameter(torch.rand(1))
         self.step = step
 
-    def forward(self, src, dst, t, msg, n_id):
+    def forward(self, n_id):
         # get node embedding
         z, last_update = self.memory(n_id)
-        self.memory.update_state(src, dst, t, msg)
 
         # get position embedding
         pos_z, _ = self.pos_memory(n_id)
+
+        return z, pos_z, last_update
+
+    def update_state(self, src, dst, t, msg):
+        self.memory.update_state(src, dst, t, msg)
 
         # get last position message
         last_pos_msg, pos_last_update = self.pos_memory(src)
@@ -51,8 +56,6 @@ class PTGNN(nn.Module):
 
         # pos_memory update
         self.pos_memory.update_state(src, src, t, pos_msg)
-
-        return z, pos_z, last_update
 
 
 class GraphAttentionEmbedding(torch.nn.Module):
