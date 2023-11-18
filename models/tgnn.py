@@ -75,3 +75,7 @@ class TGNN(torch.nn.Module):
         self.loader.insert(src, dst)
 
         return pos_out, neg_out
+
+    def reset_state(self):
+        self.memory.reset_state()
+        self.loader.reset_state()

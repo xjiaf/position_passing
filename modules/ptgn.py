@@ -8,8 +8,8 @@ from torch_geometric.nn.models.tgn import (
 
 
 class PositionPassingTGN(nn.Module):
-    def __init__(self, num_nodes: int, embedding_dim: int, msg_dim: int,
-                 memory_dim: int, time_dim: int, step: float):
+    def __init__(self, num_nodes: int, pos_embedding_dim: int, msg_dim: int,
+                 memory_dim: int, time_dim: int, step: float = 2.0):
         super().__init__()
         self.memory = TGNMemory(
             num_nodes,
@@ -23,15 +23,15 @@ class PositionPassingTGN(nn.Module):
         # pos_memory for position embedding
         self.pos_memory = TGNMemory(
             num_nodes,
-            embedding_dim,
+            pos_embedding_dim,
             memory_dim,
             time_dim,
             message_module=IdentityMessage(
-                embedding_dim, memory_dim, time_dim),
+                pos_embedding_dim, memory_dim, time_dim),
             aggregator_module=LastAggregator(),
         )
 
-        self.embedding = nn.Embedding(num_nodes, embedding_dim)
+        self.embedding = nn.Embedding(num_nodes, pos_embedding_dim)
         self.delta = nn.Parameter(torch.rand(1))
         self.step = step
 
