@@ -55,7 +55,7 @@ def download_data(params: dict):
 
 
 def main(params):
-    setup_seed(params['seed'])
+    setup_seed()
     if params['mode'] == 'data':
         save_path = Path(params['data_path'])
     else:
@@ -81,7 +81,7 @@ def main(params):
         tester.test()
 
 
-def setup_seed(seed):
+def setup_seed(seed=2023):
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
@@ -113,14 +113,14 @@ def get_params(args, config):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description="Training and Testing TGSL.")
+        description="Training and Testing Position Passing.")
     parser.add_argument('--dataset', type=str,
                         choices=['wikipedia', 'reddit', 'mooc', 'lastfm'],
                         default="wikipedia", help='Which dataset to use.')
     parser.add_argument('--mode', type=str, choices=[
         'train', 'test', 'data'], default='train')
-    # parser.add_argument('--model', type=str, choices=[
-    #     'dgnn'], help='Which model to use.')
+    parser.add_argument('--model', type=str, choices=[
+        'tgnn', 'ptgnn'], help='Which model to use.')
     args = parser.parse_args()
     config = load_config('./config.yaml')
     params = get_params(args, config)

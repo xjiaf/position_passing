@@ -1,23 +1,36 @@
 default:
   data_path: "./data/"
-  processed_data_path: "./data/processed"
-  result_path: './result'
-  seed: 2023
+  result_path: './result/'
+  batch_size: 128
+  weight_decay: 0.001
+  lr: 0.001
+
+  neg_sampling_ratio: 1
+  memory_dim: 100
+  time_dim: 100
+  embedding_dim: 100
+  pos_embedding_dim: 100
+  dropout: 0.2
+  neighbor_sample_size: 10
+
 
 datasets:
   wikipedia:
-    dataset: 'wikipedia'
+    dataset: 'Wikipedia'
 
   reddit:
-    dataset: 'reddit'
+    dataset: 'Reddit'
 
   mooc:
-    dataset: 'mooc'
-    
+    dataset: 'MOOC'
+
   lastfm:
-    dataset: 'lastfm'
+    dataset: 'LastFM'
 
 models:
-
   ptgnn:
     model: 'ptgnn'
+    step: 2
+
+  tgnn:
+    model: 'tgnn'

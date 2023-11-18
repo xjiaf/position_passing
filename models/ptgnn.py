@@ -14,7 +14,7 @@ class PTGNN(torch.nn.Module):
     def __init__(self, num_nodes: int, raw_msg_dim: int, memory_dim: int,
                  time_dim: int, pos_embedding_dim: int, embedding_dim: int,
                  mlp_hidden_dim: list = None, step: float = 2.0,
-                 dropout: float = 0.0, size: int = 100):
+                 dropout: float = 0.0, size: int = 10):
         self.memory = PositionPassingTGN(
             num_nodes,
             pos_embedding_dim,
@@ -50,7 +50,7 @@ class PTGNN(torch.nn.Module):
         # Neighbor loader
         self.loader = LastNeighborLoader(num_nodes=num_nodes, size=size)
 
-    def forward(self, graph: TemporalData, src: LongTensor, dst: LongTensor,
+    def forward(self, data: TemporalData, src: LongTensor, dst: LongTensor,
                 neg_dst: LongTensor, n_id: LongTensor, t: LongTensor,
                 msg: Tensor) -> (Tensor, Tensor):
         # Get last subgraph
@@ -60,8 +60,8 @@ class PTGNN(torch.nn.Module):
         # Get updated memory of all nodes involved in the computation.
         z, pos_z, last_update = self.memory(n_id)
         z = torch.cat([z, pos_z], dim=-1)
-        z = self.gnn(z, last_update, edge_index, graph.t[e_id].to(n_id.device),
-                     graph.msg[e_id].to(n_id.device))
+        z = self.gnn(z, last_update, edge_index, data.t[e_id].to(n_id.device),
+                     data.msg[e_id].to(n_id.device))
         z = self.mlp(z)
 
         # Only keep embeddings of target nodes for link prediction.
