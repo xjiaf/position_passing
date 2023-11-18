@@ -7,10 +7,10 @@ from torch_geometric.nn.models.tgn import (
 )
 
 
-class PTGNN(nn.Module):
+class PositionPassingTGN(nn.Module):
     def __init__(self, num_nodes: int, embedding_dim: int, msg_dim: int,
                  memory_dim: int, time_dim: int, step: float):
-        super(PTGNN, self).__init__()
+        super().__init__()
         self.memory = TGNMemory(
             num_nodes,
             msg_dim,
