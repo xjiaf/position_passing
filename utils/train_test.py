@@ -178,7 +178,6 @@ class Trainer:
     def test(self, mode: str = 'test'):
         if mode == 'test':
             loader = self.test_loader
-            self.epoch_num = -1
         elif mode == 'val':
             loader = self.val_loader
         else:
