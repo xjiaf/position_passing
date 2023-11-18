@@ -114,6 +114,7 @@ class Trainer:
 
         logging.info("---------start training----------")
         self.model = self.init_model().to(device)
+        self.model.reset_state()  # reset the state of the model
         optimizer = optim.Adam([{'params': self.model.parameters()}],
                                lr=self.params['lr'],
                                weight_decay=self.params['weight_decay'])
@@ -176,6 +177,8 @@ class Trainer:
         return y_pred, y_true
 
     def test(self, mode: str = 'test'):
+        # Initialize
+        torch.manual_seed(2023)
         if mode == 'test':
             loader = self.test_loader
         elif mode == 'val':
@@ -190,11 +193,11 @@ class Trainer:
                 save_model_path = self.save_path / 'checkpoint.pt'
             else:
                 raise ValueError('model not found')
-            logging.info('load model from {0}'.format(self.save_path))
+            logging.info('load model from {0}'.format(save_model_path))
             self.model = self.init_model().to(device)
             self.model.load_state_dict(torch.load(save_model_path))
 
-        logging.info("---------start {0}ing----------".format(mode))
+        logging.info(f"---------start {mode}ing----------")
         self.model.eval()  # set the model to eval mode
         self.mean_loss.reset()
         self.metrics.reset()
