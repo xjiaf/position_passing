@@ -106,7 +106,6 @@ def get_params(args, config):
 
     # Ensure paths are cross-platform compatible
     params['data_path'] = Path(params['data_path'])
-    params['processed_data_path'] = Path(params['processed_data_path'])
     params['result_path'] = Path(params['result_path'])
     return params
 

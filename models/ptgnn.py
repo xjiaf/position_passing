@@ -15,6 +15,9 @@ class PTGNN(torch.nn.Module):
                  time_dim: int, pos_embedding_dim: int, embedding_dim: int,
                  mlp_hidden_dim: list = None, step: float = 2.0,
                  dropout: float = 0.0, size: int = 10):
+        super().__init__()
+        self.num_nodes = num_nodes
+        self.size = size
         self.memory = PositionPassingTGN(
             num_nodes,
             pos_embedding_dim,
@@ -28,14 +31,13 @@ class PTGNN(torch.nn.Module):
             in_channels=memory_dim*2,
             out_channels=embedding_dim,
             msg_dim=raw_msg_dim,
-            time_enc=self.memory.time_enc
+            time_enc=self.memory.memory.time_enc
         )
 
         if mlp_hidden_dim is None:
-            mlp_hidden_dim = [embedding_dim] // 2
-
+            mlp_hidden_dim = [embedding_dim // 2]
         self.mlp = MLP(
-            [embedding_dim, mlp_hidden_dim],
+            [embedding_dim, *mlp_hidden_dim],
             dropout=dropout,
             act='relu',
             norm='batch_norm',
@@ -55,7 +57,7 @@ class PTGNN(torch.nn.Module):
                 msg: Tensor) -> (Tensor, Tensor):
         # Get last subgraph
         n_id, edge_index, e_id = self.loader(n_id)
-        self.assoc[n_id] = torch.arange(n_id.size(0))
+        self.assoc[n_id] = torch.arange(n_id.size(0), device=n_id.device)
 
         # Get updated memory of all nodes involved in the computation.
         z, pos_z, last_update = self.memory(n_id)
@@ -72,12 +74,25 @@ class PTGNN(torch.nn.Module):
         pos_out = self.link_pred(z_src, z_dst)
         neg_out = self.link_pred(z_src, z_neg_dst)
 
-        # Update memory and neighbor loader with ground-truth state.
+        return pos_out, neg_out
+
+    def update_state(self, src: LongTensor, dst: LongTensor, t: LongTensor,
+                     msg: Tensor):
         self.memory.update_state(src, dst, t, msg)
         self.loader.insert(src, dst)
-
-        return pos_out, neg_out
 
     def reset_state(self):
         self.memory.reset_state()
         self.loader.reset_state()
+
+    def to(self, device):
+        # Call the base class to method to handle nn.Module components
+        super().to(device)
+
+        # Manually move other tensor attributes
+        self.assoc = self.assoc.to(device)
+
+        # Reinitialize the loader with the new device
+        self.loader = LastNeighborLoader(num_nodes=self.num_nodes,
+                                         size=self.size, device=device)
+        return self

@@ -1,9 +1,10 @@
 default:
   data_path: "./data/"
   result_path: './result/'
-  batch_size: 128
+  batch_size: 1
   weight_decay: 0.001
   lr: 0.001
+  patience: 10
 
   neg_sampling_ratio: 1
   memory_dim: 100

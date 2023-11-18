@@ -18,6 +18,7 @@ from utils.early_stopping import EarlyStopping
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 torch._dynamo.config.suppress_errors = True
 torch._dynamo.config.verbose = True
+torch.autograd.set_detect_anomaly(True)
 
 
 class Trainer:
@@ -31,9 +32,8 @@ class Trainer:
             self.save_path = save_path
 
         # Load the graph
-        logging.info(f"load graph from {self.params['data_path']}")
-        dataset = JODIEDataset(
-            self.params['data_path'], name=self.params['dataset'])
+        logging.info(f"load graph from {params['dataset']}")
+        dataset = JODIEDataset(params['data_path'], name=params['dataset'])
         self.data = dataset[0]
         self.data = self.data.to(device)
 
@@ -130,17 +130,23 @@ class Trainer:
                 # Move batch to GPU
                 batch = batch.to(device)
                 pos_out, neg_out = self.model_forward(batch)
-                y_pred, y_true = self.predict(pos_out, neg_out)
                 train_loss = self.criterion(pos_out, torch.ones_like(pos_out))
                 train_loss += self.criterion(
                     neg_out, torch.zeros_like(neg_out))
-                self.metrics(y_pred, y_true)
-                self.mean_loss(train_loss.item())
+
+                self.model.update_state(
+                    batch.src, batch.dst, batch.t, batch.msg)
+
                 train_loss.backward()
                 nn.utils.clip_grad_norm_(
                     parameters=self.model.parameters(),
                     max_norm=5, norm_type=2.0)
                 optimizer.step()
+                self.model.memory.detach()  # detach the memory
+                # Calculate metrics
+                y_pred, y_true = self.predict(pos_out, neg_out)
+                self.metrics(y_pred, y_true)
+                self.mean_loss(train_loss.item())
 
                 if self.epoch_idx == 0:
                     if batch_idx % 20 == 0:
@@ -170,11 +176,11 @@ class Trainer:
         logging.info("---------finish training----------")
 
     def predict(self, pos_out, neg_out):
-        y_pred = torch.cat([pos_out, neg_out], dim=0).sigmoid().cpu()
+        y_pred = torch.cat([pos_out, neg_out], dim=0).sigmoid().detach().cpu()
         y_true = torch.cat(
             [torch.ones(pos_out.size(0)),
              torch.zeros(neg_out.size(0))], dim=0)
-        return y_pred, y_true
+        return y_pred.squeeze(), y_true
 
     def test(self, mode: str = 'test'):
         # Initialize
@@ -208,6 +214,8 @@ class Trainer:
                 y_pred, y_true = self.predict(pos_out, neg_out)
                 loss = self.criterion(pos_out, torch.ones_like(pos_out))
                 loss += self.criterion(neg_out, torch.zeros_like(neg_out))
+                self.model.update_state(batch.src, batch.dst,
+                                        batch.t, batch.msg)
                 self.mean_loss(loss.item())
                 self.metrics(y_pred, y_true)
             else:
