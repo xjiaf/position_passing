@@ -225,12 +225,9 @@ class Trainer:
             metrics = self.metrics.compute()
             self.log_metrics(loss, metrics, mode)
 
-        if mode == 'test':
-            self.writer.close()
-        else:
-            return loss
         torch.cuda.empty_cache()
         logging.info("---------finish {0}ing----------".format(mode))
+        return loss
 
     @torch.no_grad()
     def log_metrics(self, loss, metrics, mode):
