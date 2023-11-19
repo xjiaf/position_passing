@@ -162,6 +162,7 @@ class Trainer:
                 self.log_metrics(loss, train_metrics, 'train')
 
                 val_loss = self.test(mode='val')
+                self.test(mode='test')
                 if is_early_stopping:
                     early_stopping(val_loss, self.model)
 
@@ -187,6 +188,12 @@ class Trainer:
         torch.manual_seed(2023)
         if mode == 'test':
             loader = self.test_loader
+        elif mode == 'val':
+            loader = self.val_loader
+        else:
+            raise ValueError('mode must be `test` or `val`')
+
+        if not hasattr(self, 'model'):
             save_model_path = self.save_path / 'checkpoint.pt'
             if not save_model_path.exists():
                 save_model_path = self.save_path / 'model.pt'
@@ -194,16 +201,10 @@ class Trainer:
                     raise FileNotFoundError(
                         f"model file not found in {save_model_path}")
             logging.info('load model from {0}'.format(save_model_path))
-            if not hasattr(self, 'model'):
-                self.model = self.init_model().to(device)
+            self.model = self.init_model().to(device)
             state_dict = torch.load(save_model_path, map_location=device)
             self.model.load_state_dict(state_dict)
             self.model = self.model.to(device)
-
-        elif mode == 'val':
-            loader = self.val_loader
-        else:
-            raise ValueError('mode must be `test` or `val`')
 
         logging.info(f"---------start {mode}ing----------")
         self.model.eval()  # set the model to eval mode
