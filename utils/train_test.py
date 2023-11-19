@@ -203,7 +203,8 @@ class Trainer:
 
             logging.info('load model from {0}'.format(save_model_path))
             self.model = self.init_model()
-            self.model.load_state_dict(torch.load(save_model_path))
+            state_dict = torch.load(save_model_path, map_location=device)
+            self.model.load_state_dict(state_dict)
             self.model = self.model.to(device)
 
         logging.info(f"---------start {mode}ing----------")
