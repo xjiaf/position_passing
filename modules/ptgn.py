@@ -1,5 +1,5 @@
 import torch
-from torch import nn, Tensor, IntTensor
+from torch import nn, Tensor
 from torch_geometric.nn import TGNMemory
 from torch_geometric.nn.models.tgn import (
     IdentityMessage,
@@ -49,7 +49,7 @@ class PositionPassingTGN(nn.Module):
 
     def update_state(self, src, dst, t, msg):
         self.memory.update_state(src, dst, t, msg)
-        self.pos_memory.update_state(src, dst, t, IntTensor(src).unsqueeze(-1))
+        self.pos_memory.update_state(src, dst, t, Tensor(src).unsqueeze(-1))
 
     def reset_state(self):
         self.memory.reset_state()
