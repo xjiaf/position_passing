@@ -75,10 +75,10 @@ def main(params):
         model_save_path = save_path / 'model.pt'
         torch.save(trainer.model.state_dict(), model_save_path)
 
-    elif params['mode'] == 'test':
-        from utils.train_test import Trainer
-        tester = Trainer(params, device=device)
-        tester.test()
+    # elif params['mode'] == 'test':
+    #     from utils.train_test import Trainer
+    #     tester = Trainer(params, device=device)
+    #     tester.test()
 
 
 def setup_seed(seed=2023):
@@ -117,7 +117,7 @@ if __name__ == '__main__':
                         choices=['wikipedia', 'reddit', 'mooc', 'lastfm'],
                         default="wikipedia", help='Which dataset to use.')
     parser.add_argument('--mode', type=str, choices=[
-        'train', 'test', 'data'], default='train')
+        'train', 'data'], default='data')
     parser.add_argument('--model', type=str, choices=[
         'tgnn', 'ptgnn'], help='Which model to use.')
     args = parser.parse_args()
