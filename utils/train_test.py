@@ -114,7 +114,6 @@ class Trainer:
 
         logging.info("---------start training----------")
         self.model = self.init_model().to(device)
-        self.model.reset_state()  # reset the state of the model
         optimizer = optim.Adam([{'params': self.model.parameters()}],
                                lr=self.params['lr'],
                                weight_decay=self.params['weight_decay'])
@@ -123,6 +122,7 @@ class Trainer:
                 "---------start epoch {0}----------".format(
                     self.epoch_idx + 1))
             self.model.train()  # set the model to train mode
+            self.model.reset_state()  # reset the state of the model
             self.mean_loss.reset()
             self.metrics.reset()
             for batch_idx, batch in enumerate(self.train_loader):
