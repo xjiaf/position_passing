@@ -193,9 +193,9 @@ class Trainer:
 
         if not hasattr(self, 'model'):
             # Load the model if it is not loaded
-            save_model_path = self.save_path / 'model.pt'
+            save_model_path = self.save_path / 'checkpoint.pt'
             if not save_model_path.exists():
-                save_model_path = self.save_path / 'checkpoint.pt'
+                save_model_path = self.save_path / 'model.pt'
             else:
                 raise ValueError('model not found')
             logging.info('load model from {0}'.format(save_model_path))
