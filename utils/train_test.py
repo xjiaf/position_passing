@@ -196,8 +196,10 @@ class Trainer:
             save_model_path = self.save_path / 'checkpoint.pt'
             if not save_model_path.exists():
                 save_model_path = self.save_path / 'model.pt'
-            else:
-                raise ValueError('model not found')
+                if not save_model_path.exists():
+                    raise FileNotFoundError(
+                        f"model file not found in {save_model_path}")
+                
             logging.info('load model from {0}'.format(save_model_path))
             self.model = self.init_model().to(device)
             self.model.load_state_dict(torch.load(save_model_path))

@@ -77,7 +77,7 @@ def main(params):
 
     elif params['mode'] == 'test':
         from utils.train_test import Trainer
-        tester = Trainer(params, save_path=save_path, device=device)
+        tester = Trainer(params, device=device)
         tester.test()
 
 
