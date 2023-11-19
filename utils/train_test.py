@@ -110,7 +110,8 @@ class Trainer:
         if is_early_stopping:
             early_stopping = EarlyStopping(patience=self.params[
                 'patience'], verbose=True,
-                path=self.save_path / 'checkpoint.pt')
+                path=self.save_path / 'checkpoint.pt',
+                trace_func=logging.info)
 
         logging.info("---------start training----------")
         self.model = self.init_model().to(device)

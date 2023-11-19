@@ -95,10 +95,3 @@ class TGNN(torch.nn.Module):
         self.loader = LastNeighborLoader(num_nodes=self.num_nodes,
                                          size=self.size, device=device)
         return self
-
-    def eval(self):
-        self.memory.eval()
-        self.gnn.eval()
-        self.mlp.eval()
-        self.link_pred.eval()
-        return self
