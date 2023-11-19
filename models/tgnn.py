@@ -1,4 +1,3 @@
-from typing import Iterator
 import torch
 from torch import Tensor, LongTensor
 from torch_geometric.data import TemporalData
