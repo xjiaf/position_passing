@@ -181,6 +181,7 @@ class Trainer:
              torch.zeros(neg_out.size(0))], dim=0)
         return y_pred.squeeze(), y_true
 
+    @torch.no_grad()
     def test(self, mode: str = 'test'):
         # Initialize
         torch.manual_seed(2023)
@@ -199,31 +200,30 @@ class Trainer:
                 if not save_model_path.exists():
                     raise FileNotFoundError(
                         f"model file not found in {save_model_path}")
-                
+
             logging.info('load model from {0}'.format(save_model_path))
-            self.model = self.init_model().to(device)
+            self.model = self.init_model()
             self.model.load_state_dict(torch.load(save_model_path))
+            self.model = self.model.to(device)
 
         logging.info(f"---------start {mode}ing----------")
         self.model.eval()  # set the model to eval mode
         self.mean_loss.reset()
         self.metrics.reset()
-        with torch.no_grad():
-            for _, batch in enumerate(loader):
-                batch = batch.to(device)
-                pos_out, neg_out = self.model_forward(batch)
-                y_pred, y_true = self.predict(pos_out, neg_out)
-                loss = self.criterion(pos_out, torch.ones_like(pos_out))
-                loss += self.criterion(neg_out, torch.zeros_like(neg_out))
-                self.model.update_state(batch.src, batch.dst,
-                                        batch.t, batch.msg)
-                self.mean_loss(loss.item())
-                self.metrics(y_pred, y_true)
-            else:
-                loss = self.mean_loss.compute()
-                metrics = self.metrics.compute()
-
-        self.log_metrics(loss, metrics, mode)
+        for _, batch in enumerate(loader):
+            batch = batch.to(device)
+            pos_out, neg_out = self.model_forward(batch)
+            y_pred, y_true = self.predict(pos_out, neg_out)
+            loss = self.criterion(pos_out, torch.ones_like(pos_out))
+            loss += self.criterion(neg_out, torch.zeros_like(neg_out))
+            self.model.update_state(batch.src, batch.dst,
+                                    batch.t, batch.msg)
+            self.mean_loss(loss.item())
+            self.metrics(y_pred, y_true)
+        else:
+            loss = self.mean_loss.compute()
+            metrics = self.metrics.compute()
+            self.log_metrics(loss, metrics, mode)
 
         if mode == 'test':
             self.writer.close()
@@ -232,6 +232,7 @@ class Trainer:
         torch.cuda.empty_cache()
         logging.info("---------finish {0}ing----------".format(mode))
 
+    @torch.no_grad()
     def log_metrics(self, loss, metrics, mode):
         for metric_name, metric_value in metrics.items():
             self.writer.add_scalar('{0}/{1}'.format(
