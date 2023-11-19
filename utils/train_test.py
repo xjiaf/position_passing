@@ -168,7 +168,6 @@ class Trainer:
                     if early_stopping.early_stop:
                         logging.info("Early stopping")
                         break
-            torch.cuda.empty_cache()
         else:
             logging.info("---------all epochs finished----------")
 
