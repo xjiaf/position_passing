@@ -7,7 +7,7 @@ import numpy as np
 # import pandas as pd
 import torch
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 def setup_logging(save_path, log_level=logging.INFO):
