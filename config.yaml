@@ -10,7 +10,6 @@ default:
   memory_dim: 100
   time_dim: 100
   embedding_dim: 100
-  pos_embedding_dim: 100
   dropout: 0.4
   neighbor_sample_size: 10
 

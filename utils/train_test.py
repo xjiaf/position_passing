@@ -85,7 +85,6 @@ class Trainer:
             model = PTGNN(
                 self.data.num_nodes, self.data.msg.size(-1),
                 self.params['memory_dim'], self.params['time_dim'],
-                self.params['pos_embedding_dim'],
                 self.params['embedding_dim'],
                 dropout=self.params['dropout'],
                 size=self.params['neighbor_sample_size'])
