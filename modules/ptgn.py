@@ -63,11 +63,25 @@ class PositionMessage(nn.Module):
     def __init__(self, num_nodes: int, pos_embedding_dim: int,
                  memory_dim: int, time_dim: int):
         super().__init__()
-        self.out_channels = pos_embedding_dim + 2 * memory_dim + time_dim
-        self.embedding = nn.Embedding(num_nodes, pos_embedding_dim)
+        self.out_channels = 3 * memory_dim + time_dim
+        self.embedding = nn.Embedding(num_nodes, memory_dim)
 
     def forward(self, z_src: Tensor, z_dst: Tensor, raw_msg: Tensor,
                 t_enc: Tensor) -> Tensor:
         pos_msg = self.embedding(raw_msg.int()).reshape(
-            z_src.shape[0], z_src.shape[1])
+            z_src.shape[0], z_src.shape[1]) + z_src
         return torch.cat([z_src, z_dst, pos_msg, t_enc], dim=-1)
+
+
+# class PositionMessage(nn.Module):
+#     def __init__(self, num_nodes: int, pos_embedding_dim: int,
+#                  memory_dim: int, time_dim: int):
+#         super().__init__()
+#         self.out_channels = pos_embedding_dim + 2 * memory_dim + time_dim
+#         self.embedding = nn.Embedding(num_nodes, pos_embedding_dim)
+
+#     def forward(self, z_src: Tensor, z_dst: Tensor, raw_msg: Tensor,
+#                 t_enc: Tensor) -> Tensor:
+#         pos_msg = self.embedding(raw_msg.int()).reshape(
+#             z_src.shape[0], z_src.shape[1])
+#         return torch.cat([z_src, z_dst, pos_msg, t_enc], dim=-1)

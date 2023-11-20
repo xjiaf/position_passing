@@ -138,9 +138,6 @@ class Trainer:
                     batch.src, batch.dst, batch.t, batch.msg)
 
                 train_loss.backward()
-                nn.utils.clip_grad_norm_(
-                    parameters=self.model.parameters(),
-                    max_norm=5, norm_type=2.0)
                 optimizer.step()
                 self.model.memory.detach()  # detach the memory
                 # Calculate metrics
