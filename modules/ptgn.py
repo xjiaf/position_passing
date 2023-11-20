@@ -8,7 +8,8 @@ from torch_geometric.nn.models.tgn import (
 
 
 class PositionPassingTGN(nn.Module):
-    def __init__(self, num_nodes: int, msg_dim: int, memory_dim: int, time_dim: int):
+    def __init__(self, num_nodes: int, msg_dim: int, 
+                 memory_dim: int, time_dim: int):
         super().__init__()
         self.memory = TGNMemory(
             num_nodes,
