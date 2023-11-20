@@ -71,7 +71,6 @@ def main(params):
         trainer = Trainer(params, device=device)
         trainer.train()
         logging.info('Training finished, start testing...')
-        trainer.test()
         model_save_path = save_path / 'model.pt'
         torch.save(trainer.model.state_dict(), model_save_path)
 
