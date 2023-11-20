@@ -2,7 +2,7 @@ default:
   data_path: "./data/"
   result_path: './result/'
   batch_size: 128
-  weight_decay: 0.001
+  weight_decay: 0.01
   lr: 0.001
   patience: 10
 
@@ -11,7 +11,7 @@ default:
   time_dim: 100
   embedding_dim: 100
   pos_embedding_dim: 100
-  dropout: 0.2
+  dropout: 0.5
   neighbor_sample_size: 10
 
 
