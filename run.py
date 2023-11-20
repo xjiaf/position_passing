@@ -101,7 +101,7 @@ def get_params(args, config):
     # If model argument is provided, merge model-specific params
     if params['mode'] != 'data':
         params = {**params, **config['datasets'][args.dataset]}
-        params = {**params, **config['models'][args.model]}
+        params = {**params, **config['datasets'][args.dataset][args.model]}
 
     # Ensure paths are cross-platform compatible
     params['data_path'] = Path(params['data_path'])

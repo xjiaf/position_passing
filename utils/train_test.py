@@ -240,6 +240,8 @@ class Trainer:
 
 
 def cuda_usage():
+    if not torch.cuda.is_available():
+        return 0
     # in MB
     u = (torch.cuda.mem_get_info()[1] -
          torch.cuda.mem_get_info()[0]) // (1024**2)

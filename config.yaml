@@ -18,18 +18,23 @@ datasets:
   wikipedia:
     dataset: 'Wikipedia'
 
+    ptgnn:
+      model: 'ptgnn'
+
+    tgnn:
+      model: 'tgnn'
+
   reddit:
     dataset: 'Reddit'
 
   mooc:
     dataset: 'MOOC'
+    ptgnn:
+      model: 'ptgnn'
+      dropout: 0.6
+
+    tgnn:
+      model: 'tgnn'
 
   lastfm:
     dataset: 'LastFM'
-
-models:
-  ptgnn:
-    model: 'ptgnn'
-
-  tgnn:
-    model: 'tgnn'
