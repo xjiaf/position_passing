@@ -31,7 +31,6 @@ datasets:
 models:
   ptgnn:
     model: 'ptgnn'
-    step: 2
 
   tgnn:
     model: 'tgnn'

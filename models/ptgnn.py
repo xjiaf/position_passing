@@ -13,7 +13,7 @@ from modules.ptgn import PositionPassingTGN
 class PTGNN(torch.nn.Module):
     def __init__(self, num_nodes: int, raw_msg_dim: int, memory_dim: int,
                  time_dim: int, pos_embedding_dim: int, embedding_dim: int,
-                 mlp_hidden_dim: list = None, step: float = 2.0,
+                 mlp_hidden_dim: list = None, 
                  dropout: float = 0.0, size: int = 10):
         super().__init__()
         self.num_nodes = num_nodes
@@ -24,7 +24,6 @@ class PTGNN(torch.nn.Module):
             raw_msg_dim,
             memory_dim,
             time_dim,
-            step=step
         )
 
         self.gnn = GraphAttentionEmbedding(

@@ -88,7 +88,6 @@ class Trainer:
                 self.params['pos_embedding_dim'],
                 self.params['embedding_dim'],
                 dropout=self.params['dropout'],
-                step=self.params['step'],
                 size=self.params['neighbor_sample_size'])
         return model
 
