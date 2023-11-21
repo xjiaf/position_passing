@@ -29,9 +29,9 @@ datasets:
 
   mooc:
     dataset: 'MOOC'
-    memory_dim: 30
-    time_dim: 30
-    embedding_dim: 30
+    memory_dim: 20
+    time_dim: 20
+    embedding_dim: 20
     ptgnn:
       model: 'ptgnn'
       dropout: 0.6
