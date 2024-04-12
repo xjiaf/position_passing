@@ -29,3 +29,15 @@ class LinkPredictor(torch.nn.Module):
         h = self.lin_src(z_src) + self.lin_dst(z_dst)
         h = h.relu()
         return self.lin_final(h)
+
+
+class NodeClassifier(torch.nn.Module):
+    def __init__(self, in_channels, num_classes):
+        super().__init__()
+        self.lin = Linear(in_channels, in_channels)
+        self.lin_final = Linear(in_channels, num_classes)
+
+    def forward(self, z):
+        h = self.lin(z)
+        h = h.relu()
+        return self.lin_final(h)
